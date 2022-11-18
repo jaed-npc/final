@@ -1,0 +1,70 @@
+var x=184; //bitx
+var y=161; // bit y
+var bh=109; 
+var drawface=function(x,y,bh){
+    noStroke();
+    fill(224,172,105);
+    ellipse(x+(bh/150*1),y+(bh/150*1),bh/150*80,bh/150*88);//face
+    
+    fill(30, 92, 23);
+    arc(x-(bh/150*40),y+(bh/150*37),bh/150*28,bh/150*55,bh/150*0,bh/150*361); //left jawline
+    arc(x+(bh/150*40),y+(bh/150*37),bh/150*28,bh/150*55,bh/15*0,bh/150*361);// right jawline
+    
+    
+    
+    fill(8, 6, 6);
+    ellipse(x-(bh/150*36),y-(bh/150*20),bh/150*10,bh/150*15);//hair
+    ellipse(x-(bh/150*37),y-(bh/150*30),bh/150*15,bh/150*15);//hair
+    ellipse(x-(bh/150*20),y-(bh/150*35),bh/150*17,bh/150*17);//hair
+    ellipse(x-(bh/150*30),y-(bh/150*41),bh/150*17,bh/150*17);//hair
+    ellipse(x-(bh/150*5),y-(bh/150*45),bh/150*17,bh/150*17);//hair
+    ellipse(x+(bh/150*3),y-(bh/150*45),bh/150*17,bh/150*17);//hair
+    ellipse(x+(bh/150*15),y-(bh/150*45),bh/150*17,bh/150*17);//hair
+    ellipse(x+(bh/150*27),y-(bh/150*41),bh/150*17,bh/150*17);//hair
+    ellipse(x+(bh/150*30),y-(bh/150*35),bh/150*17,bh/150*17);//hair
+    ellipse(x+(bh/150*38),y-(bh/150*30),bh/150*10,bh/150*15);//hair
+    ellipse(x+(bh/150*34),y-(bh/150*20),bh/150*10,bh/150*15);//hair
+    
+    
+    rect(x-(bh/150*25),y-(bh/150*20),bh/150*15,bh/150*3); //left eyebrow
+    rect(x+(bh/150*10),y-(bh/150*20),bh/150*15,bh/150*3); //right eyebrow
+    
+    fill(255, 255, 255);
+    ellipse(x-(bh/150*18),y-(bh/150*10),bh/150*15,bh/150*7); //left white eye
+    
+    fill(79, 12, 79);
+    ellipse(x-(bh/150*18),y-(bh/150*10),bh/150*6,bh/150*6); //left pupil
+    
+    fill(255, 255, 255);
+    ellipse(x+(bh/150*17),y-(bh/150*10),bh/150*15,bh/150*7); //right white eye
+    
+    fill(79, 12, 79);
+    ellipse(x+(bh/150*17),y-(bh/150*10),bh/150*6,bh/150*6); //right pupil
+    
+    fill(214, 146, 64);
+    bezier(x-(bh/150*11),y+(bh/150*1),x+(bh/150*22),y+(bh/150*26),x-(bh/150*5),y-(bh/150*44       ),x-(bh/150*4),y+(bh/150*7));//nose
+    
+    fill(148, 74, 74);
+    ellipse(x-(bh/150*1),y+(bh/150*5),bh/150*3,bh/150*3); //left nostril
+    ellipse(x+5,y+5,3,3); //right nostril
+    
+    stroke(168, 34, 34);
+    fill(148, 7, 74);
+    ellipse(x+(bh/150*1),y+(bh/150*22),bh/150*20,bh/150*25); //mouth
+    
+    fill(255, 255, 255);
+    rect(x-(bh/150*5),y+(bh/150*10),bh/150*10,bh/150*5); //top teeth
+    rect(x-(bh/150*5),y+(bh/150*28),bh/150*10,bh/150*5); //bottom teeth
+};
+var drawbody=function(x,y,bh){
+textSize(16);
+fill(237, 237, 237);
+text("J.F",x-(bh/150*10),y+(bh/150*70));
+
+ fill(45, 25, 224); //color 
+quad(x-(bh/150*67),y+(bh/150*100),x-(bh/150*42),y+(bh/150*45),x+(bh/150*37),y+(bh/150*45),x+(bh/150*87),y+(bh/150*90));
+};
+
+
+drawbody(x,y,bh);
+drawface(x,y,bh);
