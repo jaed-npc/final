@@ -21,6 +21,7 @@ var Clock = 0;
 var mouseY = height/2;
 var mouseX = height/2;
 var player2Y = height/2;
+var player2X = width/2;
 var player1Score = 0;
 var player2Score = 0;
 var puck;
@@ -80,6 +81,16 @@ var start = new Button({
     label: "Start",
     onClick: function() {
         currentScene = 2;
+    }
+});
+var resetPuckPosition = new Button({
+    x: 25,
+    y: 600,
+    width: 100,
+    label: "Start",
+    onClick: function() {
+            this.position = new PVector(width/2, height/2);
+            this.resetVelocity();
     }
 });
 /***************************************
@@ -233,27 +244,28 @@ var drawBitmojiJaed = function(x, y, bitMojiHeight){
 /************************************
             Draw Paddle
 *************************************/
-var drawPaddle = function(x,y) {
+var drawPaddle = function(x,y,paddleWidth, paddleHeight) {
     fill(166, 166, 166);
     strokeWeight(2.5);
-    ellipse(x, y, 35, 37);
+    ellipse(x, y, 45, 45);
     stroke(255, 0, 0);
-    strokeWeight(20);
+    strokeWeight(35);
     point(x,y);
     stroke(125, 0, 0);
-    strokeWeight(10);
+    strokeWeight(15);
     point(x,y);
 };
 
-var drawPaddleOpponent = function(x,y) {
+var drawPaddleOpponent = function(x,y,paddleWidth, paddleHeight) {
+    noStroke();
     fill(166, 166, 166);
     strokeWeight(2.5);
-    ellipse(x, y, 35, 37);
-    stroke(0, 128, 255);
-    strokeWeight(20);
+    ellipse(x, y, 45, 45);
+    stroke(0, 89, 255);
+    strokeWeight(35);
     point(x,y);
-    stroke(0, 80, 217);
-    strokeWeight(10);
+    stroke(47, 0, 255);
+    strokeWeight(15);
     point(x,y);
 };
 
@@ -272,7 +284,7 @@ var drawRink = function()
         stroke(0, 0, 0);
         strokeWeight(2);
         fill(245, 255, 255);
-        rect(0, 0, 599, 399, 50);
+        rect(0, 0, 599, 399);
 //Goalie zones
     for (var g=0; g<=1; g++)
         {
@@ -341,17 +353,14 @@ var Puck = function(position, speed) {
     this.resetVelocity = function() {
         this.theta = random(0, 360);
         this.velocity = new PVector(
-        this.speed*cos(this.theta), -this.speed*sin(this.theta));
+        this.speed*cos(this.theta),
+        -this.speed*sin(this.theta));
         player2Y = height/2;
     };
     this.resetVelocity();
     
     this.draw = function() {
-    noStroke();
-    fill(4, 75, 125);
-    ellipse(this.position.x,this.position.y,25,25);
-    fill(0, 0, 0);
-    ellipse(this.position.x,this.position.y,20,20);
+    drawPuck(this.position.x,this.position.y);
     };
     
     this.collideWithPaddle = function(x, y) {
@@ -380,11 +389,10 @@ var Puck = function(position, speed) {
             gameStarted = false;
             this.resetVelocity();
         }
-        else if (this.position.x > width && this.position.y>140 && this.position.y<280) {
+        else if (this.position.x > width && this.position.y>140 && this.position.y<290) {
             player1Score++;
             this.position = new PVector(width/2, height/2);
             gameStarted = false;
-            this.resetVelocity();
         }
        
        else if (this.position.y < 0) {
@@ -407,13 +415,13 @@ var Puck = function(position, speed) {
         
         //Handle paddle collisions
         this.collideWithPaddle(mouseX, mouseY);
-        this.collideWithPaddle(width-20, player2Y);
+        this.collideWithPaddle(player2X, player2Y);
         
         this.position.add(this.velocity);
     };
 };
 
-puck = new Puck(new PVector(width/2, height/2));
+puck = new Puck(new PVector(width/2,height/2));
 
 var drawScore = function() {
     strokeWeight(3);
@@ -440,37 +448,30 @@ var updatePlayer2 = function() {
     else if (player2Y-puck.position.y <= playerMoveSpeed) {
         player2Y += playerMoveSpeed;
     }
+    if (abs(player2X-puck.position.x) < playerMoveSpeed){
+        player2X = puck.position.x;
+    }
+    else if (player2X-puck.position.x >= playerMoveSpeed) {
+        player2X -= playerMoveSpeed;
+    }
+    else if (player2X-puck.position.x <= playerMoveSpeed) {
+        player2X += playerMoveSpeed;
+    }
 };
 
 
 
 
-
 var drawPlayers = function() {
+
 //Constrain the player movement
-   mouseX = constrain(mouseX, 0, 400);
-   mouseY = constrain(mouseY, 0, 400);
-   player2Y = constrain(player2Y, 0, 400);
-    
-    fill(204, 0, 0);
-    strokeWeight(2.5);
-    ellipse(mouseX,mouseY, paddleWidth, paddleHeight);
-    stroke(255, 0, 0);
-    strokeWeight(20);
-    point(mouseX,mouseY);
-    stroke(135, 23, 23);
-    strokeWeight(10);
-    point(mouseX,mouseY);
-    
-    fill(37, 0, 245);
-    stroke(0, 30, 255);
-    ellipse(width-20, player2Y, paddleWidth-5, paddleHeight-9);
-    stroke(25, 86, 135);
-    strokeWeight(20);
-    point(width-20,player2Y);
-    stroke(0, 8, 125);
-    strokeWeight(10);
-    point(width-20,player2Y);
+   mouseX = constrain(mouseX, 0, 270);
+   player2Y = constrain(player2Y, 0, 600);
+   player2X = constrain(player2X, 450, 600);
+
+drawPaddle(mouseX,mouseY, paddleWidth, paddleHeight);
+drawPaddleOpponent(player2X, player2Y, paddleWidth, paddleHeight);
+
 };
 
 
