@@ -4,31 +4,26 @@
         In URI CSC 106
 ############################*/
 
-/*
-Starter Code obtained from Khan Academy Pong Challenge:
-
-https://www.khanacademy.org/computing/computer-programming/programming-games-visualizations/side-scroller/pc/challenge-pong
-*/
 
 /****************************
        Global Variables
 ****************************/
-var Score = 0;
-var currentScene = 1;
-var stillplaying = true;
-var Clock = 0;
+var currentScene = 1; //changes the scenes in the game
+var stillplaying = true; //If the game is still going on
+var Clock = 0; //Clock
 
 var mouseY = height/2;
 var mouseX = height/2;
 var player2Y = height/2;
-var player1Score = 0;
-var player2Score = 0;
+var player2X = width/2;
+var player1Score = 0; //Score for player one
+var player2Score = 0; //Score for player two
 var puck;
 var gameStarted = false;
 var t = 0;
 
 //Constants
-var PAUSE_TIME = 60;
+var pauseTime = 60;
 var playerMoveSpeed = 4;
 var puckSpeed = 9;
 var paddleHeight = 49;
@@ -41,23 +36,23 @@ var paddleWidth = 47;
 /***************************************
     Paste in Khan Button class, 
     including mouseClicked function.
-***************************************/ 
+***************************************/
 var Button = function(config) {
     this.x = config.x || 0;
     this.y = config.y || 0;
     this.width = config.width || 150;
-    this.height = config.height || 40;
+    this.height = config.height || 35;
     this.label = config.label || "Click";
     this.onClick = config.onClick || function() {};
 };
 
 Button.prototype.draw = function() {
-    fill(181, 181, 181);
+    fill(125, 240, 206, 100);
     rect(this.x, this.y, this.width, this.height, 13);
-    fill(0, 0, 0);
-    textSize(19);
+    fill(255, 255, 255);
+    textSize(15);
     textAlign(LEFT, TOP);
-    text(this.label, this.x+30, this.y+this.height/4);
+    text(this.label, this.x+10, this.y+this.height/4);
 };
 
 Button.prototype.isMouseInside = function() {
@@ -72,14 +67,44 @@ Button.prototype.handleMouseClick = function() {
         this.onClick();
     }
 };
-
-var start = new Button({
-    x: 250,
-    y: 314,
+var back = new Button({
+    x: 15,
+    y: 358,
     width: 100,
+    height: 35,
+    label: "back",
+    onClick: function() {
+        currentScene = 1;
+    }
+});
+var start = new Button({
+    x: 15,
+    y: 350,
+    width: 100,
+    height: 35,
     label: "Start",
     onClick: function() {
         currentScene = 2;
+    }
+});
+var howtoPlay = new Button({
+    x: 15,
+    y: 300,
+    width: 100,
+    height: 35,
+    label: "How to Play",
+    onClick: function() {
+        currentScene = 5;
+    }
+});
+var Soccer = new Button({
+    x: 13,
+    y: 250,
+    width: 105,
+    height: 35,
+    label: "Soccer Mode",
+    onClick: function() {
+        currentScene = 3;
     }
 });
 /***************************************
@@ -90,7 +115,6 @@ var start = new Button({
 /******************************************************
                     Ryan Bitmoji
 *******************************************************/
-
 var drawBitmojiHeadRyan = function(x, y, bitMojiHeight)
 {
     noStroke();
@@ -136,10 +160,11 @@ var drawBitmojiBodyRyan = function(x, y, bitMojiHeight)
     rect(x-27*bitMojiHeight/150, y+58*bitMojiHeight/150, bitMojiHeight/150*5, bitMojiHeight/150*38);
     noFill();
     stroke(0, 0, 0);
-    strokeWeight(2);
+    strokeWeight(3);
     ellipse(x-15*bitMojiHeight/150, y+68*bitMojiHeight/150, bitMojiHeight/150*21, bitMojiHeight/150*21);
     line(x-7*bitMojiHeight/150, y+94*bitMojiHeight/150, x-24*bitMojiHeight/150, y+74*bitMojiHeight/150);
     arc(x+18*bitMojiHeight/150, y+77*bitMojiHeight/150, bitMojiHeight/150*30, bitMojiHeight/150*30, 60, 300);
+    strokeWeight(1);
 };
 var drawBitmojiRyan = function(x, y, bitMojiHeight)
 {
@@ -155,7 +180,7 @@ var drawBitmojiRyan = function(x, y, bitMojiHeight)
 /******************************************************
                     Jaed Bitmoji
 *******************************************************/
-var bh=100; 
+var bh=68; 
 var drawface=function(x,y,bh){
     noStroke();
     fill(224,172,105);
@@ -212,19 +237,17 @@ var drawface=function(x,y,bh){
     rect(x-(bh/150*5),y+(bh/150*28),bh/150*10,bh/150*5); //bottom teeth
 };
 var drawbody=function(x,y,bh){
+ fill(45, 25, 224); //color 
+quad(x-(bh/150*67),y+(bh/150*100),x-(bh/150*42),y+(bh/150*45),x+(bh/150*37),y+(bh/150*45),x+(bh/150*87),y+(bh/150*90));
 textSize(16);
 fill(237, 237, 237);
 text("J.F",x-(bh/150*10),y+(bh/150*70));
-
- fill(45, 25, 224); //color 
-quad(x-(bh/150*67),y+(bh/150*100),x-(bh/150*42),y+(bh/150*45),x+(bh/150*37),y+(bh/150*45),x+(bh/150*87),y+(bh/150*90));
 };
 var drawBitmojiJaed = function(x, y, bitMojiHeight){
     drawbody(x,y,bh);
     drawface(x,y,bh);
     
-};  
-
+};
 /******************************************************
                     Jaed Bitmoji
 *******************************************************/
@@ -233,30 +256,30 @@ var drawBitmojiJaed = function(x, y, bitMojiHeight){
 /************************************
             Draw Paddle
 *************************************/
-var drawPaddle = function(x,y) {
-    fill(166, 166, 166);
-    strokeWeight(2.5);
-    ellipse(x, y, 35, 37);
-    stroke(255, 0, 0);
-    strokeWeight(20);
-    point(x,y);
-    stroke(125, 0, 0);
-    strokeWeight(10);
-    point(x,y);
+var drawPaddle = function(x,y,paddleWidth, paddleHeight) {
+    fill(166, 166, 166); //base color
+    strokeWeight(2.5); //fills out the shape
+    ellipse(x, y, 45, 45); //Base
+    stroke(255, 0, 0); //color of the cup
+    strokeWeight(35); //fills out the shape
+    point(x,y); //point used for the cup part of the paddle.
+    stroke(125, 0, 0);  // color of the Handle
+    strokeWeight(15); //fills out the shape
+    point(x,y); //point used for the handle.
 };
 
-var drawPaddleOpponent = function(x,y) {
-    fill(166, 166, 166);
-    strokeWeight(2.5);
-    ellipse(x, y, 35, 37);
-    stroke(0, 128, 255);
-    strokeWeight(20);
-    point(x,y);
-    stroke(0, 80, 217);
-    strokeWeight(10);
-    point(x,y);
+var drawPaddleOpponent = function(x,y,paddleWidth, paddleHeight) {
+    noStroke(); //removing past strokes.
+    fill(166, 166, 166); //base color
+    strokeWeight(2.5); //fills out the shape
+    ellipse(x, y, 45, 45); //Base
+    stroke(0, 89, 255); //color of the cup
+    strokeWeight(35); //fills out the shape
+    point(x,y); //point used for the cup part of the paddle.
+    stroke(47, 0, 255); // color of the Handle
+    strokeWeight(15); //fills out the shape
+    point(x,y); //point used for the handle.
 };
-
 /************************************
             Paddle End
 *************************************/
@@ -267,14 +290,15 @@ var drawPaddleOpponent = function(x,y) {
 ************************/
 var drawRink = function()
 {
-    background(196, 196, 196);
+    background(196, 196, 196); //background
         //boards
-        stroke(0, 0, 0);
-        strokeWeight(2);
+        stroke(0, 0, 0); //board color
+        strokeWeight(2); //board size
         fill(245, 255, 255);
-        rect(0, 0, 599, 399, 50);
+        rect(0, 0, 600, 400); //boards shape
 //Goalie zones
-    for (var g=0; g<=1; g++)
+//for loop to remake the crease and blue lines
+    for (var g=0; g<=1; g++) 
         {
         //Goal
             noStroke();
@@ -287,27 +311,28 @@ var drawRink = function()
 //Center Ice
     noStroke();
     fill(255, 0, 0);
-    rect(297, 0, 5, 400);
+    rect(297, 0, 5, 400); //Red line
 //Circle
-    fill(105, 225, 255);
-    ellipse(300, 200, 50, 50);
+    fill(105, 225, 255); //color of center ice
+    ellipse(300, 200, 50, 50); //center ice
 //Net
-    stroke(255, 0, 0);
-    strokeWeight(5);
-    arc(10, 200, 100, 85, 90, 270); // left
-    arc(591, 200, 100, 85, -89, 90); // right
+    stroke(255, 0, 0); //pipe color
+    strokeWeight(5); //net size
+    arc(10, 200, 100, 85, 90, 270); // left net
+    arc(591, 200, 100, 85, -89, 90); // right net
 //URI Text Center Ice
     textSize(14);
     fill(255, 255, 255);
-    text("URI", 289, 192);
+    text("URI", 289, 192); //URI text in center ice
 //Air Holes
-        for (var v=1; v < 20; v++)
+//nested for loop used to constantly repeat the circles in a grid to give a feeling of actually playing Air hockey.
+        for (var v=1; v < 20; v++) //creates a 20x20 grid of holes
                 {
             for (var h=1; h < 20; h++)
             {
-                strokeWeight(3);
-                stroke(222, 222, 222);
-                point(2+29.5*h,20*v);
+                strokeWeight(3); // "hole" size
+                stroke(222, 222, 222); // "hole" color
+                point(2+29.5*h,20*v); //"hole"
         }
     }
 };
@@ -317,41 +342,92 @@ var drawRink = function()
 
 
 /************************
-        Draw Puck
+        Field 
 ************************/
-var drawPuck = function(x,y) 
-    {
-    noStroke();
-    fill(94, 94, 94);
-    ellipse(x,y,30,29);
-    fill(0, 0, 0);
-    ellipse(x,y,16,16);  
+var drawsoccerField = function() 
+{ 
+    //grass
+    strokeWeight(5);
+    stroke(255, 255, 255); //white border
+    fill(3, 150, 0); 
+    rect(1,0,598,399); //rectangle to give the field shape.
+    //center
+    strokeWeight(2);
+    stroke(255, 255, 255); // white
+    fill(3, 150, 0);
+    ellipse(300,200,100,100); //center circle
+    line(300,0,300,400); //center line
+    strokeWeight(10);
+    point(300,200); //center dot
+    
+    //Nets
+    //left
+    strokeWeight(2);
+    rect(3,100,86,200); //goal boxes
+    rect(3,155,30,90);
+    arc(91,200,30,55,-90,90); //left side goal arc
+    //right
+    rect(512,100,86,200); //goal boxes
+    rect(568,155,30,90);
+    arc(510,200,30,55,-270,-90); //right side goal arc
 };
 /************************
-      Draw Puck End
+        Field End
 ************************/
 
 
+/****************************
+        Draw Puck & Ball
+*****************************/
+var drawPuck = function(x,y) 
+    {
+    noStroke(); //remove previous strokes
+    fill(94, 94, 94); //border color
+    ellipse(x,y,25,25); //border
+    fill(0, 0, 0); //actual puck color
+    ellipse(x,y,16,16);  //actual puck shape
+};
+
+var drawBall = function(x,y)
+    {
+    stroke(0, 0, 0); //black outline of the ball
+    strokeWeight(1); //outline thickness = 1
+    fill(255, 255, 255); //white soccer ball color
+    ellipse(x,y,20,20); // ball
+};
+
+/****************************
+      Draw Puck End
+*****************************/
+
+
+
+
+
+/*******************************
+     Main Game  
+********************************/
 var Puck = function(position, speed) {
     this.position = position;
     this.speed = speed || puckSpeed;
-    
     this.radius = 12;
     
     this.resetVelocity = function() {
         this.theta = random(0, 360);
         this.velocity = new PVector(
-        this.speed*cos(this.theta), -this.speed*sin(this.theta));
+        this.speed*cos(this.theta),
+        -this.speed*sin(this.theta));
         player2Y = height/2;
     };
     this.resetVelocity();
     
     this.draw = function() {
-    noStroke();
-    fill(4, 75, 125);
-    ellipse(this.position.x,this.position.y,25,25);
-    fill(0, 0, 0);
-    ellipse(this.position.x,this.position.y,20,20);
+    if (currentScene === 2) {    
+    drawPuck(this.position.x,this.position.y);
+    }
+    else if (currentScene === 3) {
+    drawBall(this.position.x,this.position.y);
+    }
     };
     
     this.collideWithPaddle = function(x, y) {
@@ -367,7 +443,7 @@ var Puck = function(position, speed) {
                     this.position.x = x - 
                     this.radius - paddleWidth/2;
                 }
-                this.velocity.mult(new PVector(-1, 1));
+                this.velocity.mult(new PVector(-1, 1,1));
             }
         }
     };
@@ -380,11 +456,10 @@ var Puck = function(position, speed) {
             gameStarted = false;
             this.resetVelocity();
         }
-        else if (this.position.x > width && this.position.y>140 && this.position.y<280) {
+        else if (this.position.x > width && this.position.y>140 && this.position.y<290) {
             player1Score++;
             this.position = new PVector(width/2, height/2);
             gameStarted = false;
-            this.resetVelocity();
         }
        
        else if (this.position.y < 0) {
@@ -407,29 +482,46 @@ var Puck = function(position, speed) {
         
         //Handle paddle collisions
         this.collideWithPaddle(mouseX, mouseY);
-        this.collideWithPaddle(width-20, player2Y);
+        this.collideWithPaddle(player2X, player2Y);
         
         this.position.add(this.velocity);
     };
 };
 
-puck = new Puck(new PVector(width/2, height/2));
+puck = new Puck(new PVector(width/2,height/2));
+/*******************************
+     Main Game    End  
+********************************/
 
+
+
+
+/*******************************
+     ScoreBoard Function  
+********************************/
 var drawScore = function() {
-    strokeWeight(3);
-    fill(3, 0, 0);
-    stroke(150, 142, 150);
-    rect(174,0,246,24,29);
+    //scoreboard
+    strokeWeight(3); //thickness
+    fill(3, 0, 0); //color of the screen
+    stroke(150, 142, 150); //border color
+    rect(174,0,246,24,29); //scoreboard
     
     
-    fill(255, 0, 0);
-    textSize(16);
-    var Player1Score = "Player 1:"+player1Score;
+    fill(255, 0, 0); //scoreboard text color
+    textSize(16); //size of the text
+    var Player1Score = "Player 1:"+player1Score; //finding the player1score then adding it to the score so that the scoreboard reflects their points
     text(Player1Score, 185,5);
     var Player2Score = "Player 2:"+player2Score;
     text(Player2Score, 328,5);
 };
+/*******************************
+     ScoreBoard Function End  
+********************************/
 
+
+/***************************
+       Player Update   
+****************************/
 var updatePlayer2 = function() {
     if (abs(player2Y-puck.position.y) < playerMoveSpeed){
         player2Y = puck.position.y;
@@ -440,38 +532,47 @@ var updatePlayer2 = function() {
     else if (player2Y-puck.position.y <= playerMoveSpeed) {
         player2Y += playerMoveSpeed;
     }
+    if (abs(player2X-puck.position.x) < playerMoveSpeed){
+        player2X = puck.position.x;
+    }
+    else if (player2X-puck.position.x >= playerMoveSpeed) {
+        player2X -= playerMoveSpeed;
+    }
+    else if (player2X-puck.position.x <= playerMoveSpeed) {
+        player2X += playerMoveSpeed;
+    }
 };
+/***************************
+       Player Update End  
+****************************/
 
 
-
-
-
+/***************************
+       Player Movement  
+****************************/
 var drawPlayers = function() {
-//Constrain the player movement
-   mouseX = constrain(mouseX, 0, 400);
-   mouseY = constrain(mouseY, 0, 400);
-   player2Y = constrain(player2Y, 0, 400);
-    
-    fill(204, 0, 0);
-    strokeWeight(2.5);
-    ellipse(mouseX,mouseY, paddleWidth, paddleHeight);
-    stroke(255, 0, 0);
-    strokeWeight(20);
-    point(mouseX,mouseY);
-    stroke(135, 23, 23);
-    strokeWeight(10);
-    point(mouseX,mouseY);
-    
-    fill(37, 0, 245);
-    stroke(0, 30, 255);
-    ellipse(width-20, player2Y, paddleWidth-5, paddleHeight-9);
-    stroke(25, 86, 135);
-    strokeWeight(20);
-    point(width-20,player2Y);
-    stroke(0, 8, 125);
-    strokeWeight(10);
-    point(width-20,player2Y);
+//prevents the player from moving past the red line and the computer from moving past the blue line.
+//by doing this it prevents them from having an advantage.
+   mouseX = constrain(mouseX, 0, 300);
+   player2Y = constrain(player2Y, 0, 600);
+   player2X = constrain(player2X, 450, 600);
+
+//When the current scene is set to 2 it is drawing the paddles
+//Player1 can use the mouse while Player2, the computer has to follow a randomized path from the line (vector) of the ball or puck for its movement.
+if (currentScene === 2) {
+    drawPaddle(mouseX, mouseY, paddleWidth, paddleHeight);
+    drawPaddleOpponent(player2X, player2Y, paddleWidth, paddleHeight);
+}
+//When the current scene is set to 3 it is drawing the bitmojis
+//Player1 can use the mouse while Player2, the computer has to follow a randomized path of the line (vector) ball or puck for its movement.
+else if (currentScene === 3) {
+    drawBitmojiRyan(mouseX, mouseY,50);
+    drawBitmojiJaed(player2X, player2Y);
+    }
 };
+/***************************
+       Player Movement End 
+****************************/
 
 
 /***************************
@@ -479,22 +580,56 @@ var drawPlayers = function() {
 ****************************/
 var Splash = function() {
 currentScene=1;
-background (80, 201, 159);
-    textSize(48);
-    fill(105, 99, 99);
-    text ("Air Hockey", 192, 65);
-    fill(0, 242, 255);
-    text ("Air Hockey", 194, 63);
-    fill(255, 255, 255);
-    textSize(26);
-    fill(105, 99, 99);
-    text ("By Ryan & Jaed", 228, 140);
-    fill(255, 255, 255);
-    text ("By Ryan & Jaed", 230, 138);
-    strokeWeight(1);
+background (80, 199, 153); //background color
+    noStroke(); //no outlines
+    fill(35, 36, 26, 99); //forms the cool bar on the side.
+    rect(0,0,126,400);
+    fill(35, 36, 26, 80); //translucent gray, cool overlay.
+    rect(126,0,10,400);
+    textSize(26); //text size
+    fill(105, 99, 99); //text shadow color
+    text ("By Ryan & Jaed", 330, 362);
+    fill(255, 255, 255); // white text color
+    text ("By Ryan & Jaed", 332, 360); //author
+    strokeWeight(1); //resetting the strokeweight
+    stroke(0, 0, 0);
+    //buttons
+    Soccer.draw();
+    howtoPlay.draw();
     start.draw();
-    drawBitmojiRyan(190,155,50);
-    drawBitmojiJaed(473,155,50);
+    drawBitmojiRyan(308,357,50); //bitmojis
+    drawBitmojiJaed(551,342,50);
+    
+    noStroke();
+    
+    //Shadow - first blue quad
+    fill(59, 58, 59, 50);
+    quad(60,90,28,25,120,25,155,90);
+    
+//Weirdly cool shapes//
+    //First Blue Quad
+    fill(25, 156, 250);
+    quad(65,85,35,25,120,25,155,85);
+    //Shadow - Second Blue Quad
+    fill(59, 58, 59, 50);
+    quad(445,90,406,25,500,25,540,90);
+    //Transparent long Quad
+    fill(0, 0, 0,100);
+    quad(180,80,145,30,545,30,580,80);
+    //Second Blue Quad
+    fill(25, 156, 250);
+    quad(450,85,415,25,500,25,540,85);
+    //Red Quad
+    fill(217, 13, 13);
+    quad(175,85,140,25,155,25,190,85);
+    
+    //TITLE
+    textSize(40); 
+    fill(54, 54, 54);
+    text ("Air Hockey", 192, 31);
+    fill(0, 242, 255);
+    text ("Air Hockey", 194, 29);
+    fill(255, 255, 255);
 };
 /***************************
       Splash Screen End 
@@ -505,17 +640,26 @@ background (80, 201, 159);
        Play Screen 
 ****************************/
 var playScreen=function(){
-    currentScene=2;
-    
+
+//When the user selects the start button it will select the Hockey mode, which says the current scene is 2 and then draws the hockey rink.
+if (currentScene === 2) {
     drawRink();
+}
+//does the same thing but for the soccer button and draws the soccer field.
+else if (currentScene === 3) {
+    drawsoccerField();
+}
+
+//now moves the computer player, draws both the User and computer so you can see yourself interacting and playing the game.
     updatePlayer2();
     drawPlayers();
-    drawScore();
-    puck.draw();
-    
+    drawScore(); //puts the scoreboard on the screen
+    puck.draw(); //puts the Puck/ball on screen to be hit into the nets
+
+//if the game is not started the clock starts, and when the time is 
     if (!gameStarted) {
         t++;
-        if (t >= PAUSE_TIME) {
+        if (t >= pauseTime) {
             t = 0;
             gameStarted = true;
         }
@@ -528,13 +672,58 @@ var playScreen=function(){
 ********'********************/
 
 
+/***********************************
+       Instructions Screen 
+********'***************************/
+var instructions = function(){
+    currentScene = 5; //tells the game it is set to the 5th sceen and lays out the instructions on how to play the game.
+    background (100, 232, 208); //background color
+    noStroke();
+    fill(35, 36, 26, 99);
+    rect(0,0,600,80);
+    fill(35, 36, 26, 80);
+    rect(0,80,600,8);
+    fill(255, 255, 255);
+    rect(1,75,598,4,20);
+    textSize(48);
+    fill(105, 99, 99);
+    text ("How to play", 172, 18);
+    fill(0, 242, 255);
+    text ("How to play", 170, 16);
+    fill(35, 36, 26, 99);
+    rect(0,350,600,50);
+    fill(35, 36, 26, 80);
+    rect(0,342,600,8);
+    fill(255, 255, 255);
+    rect(1,350,598,4,20);
+    strokeWeight(1);
+    textSize(14);
+    fill(8, 8, 8);
+    text ("Move your mouse to move the paddle.", 15, 113);
+    text ("The direction you move your mouse is the direction the paddle moves.", 15, 130);
+    stroke(0, 0, 0);
+    back.draw();
+};
+/***********************************
+       Instructions Screen  End 
+********'***************************/
+
+
 /****************************
     MouseClicked Function 
 *****************************/
 mouseClicked = function() {
+    //You can only click the buttons when the scene is set to 1 as to not interfere with the game
     if(currentScene===1)
     {
+    Soccer.handleMouseClick();
     start.handleMouseClick();
+    howtoPlay.handleMouseClick();
+    }
+    //You can only click the back button when the scene is set to 5 as to not interfere with the splash screen
+    else if(currentScene===5)
+    {
+    back.handleMouseClick();
     }
 };
 /****************************
@@ -546,13 +735,21 @@ mouseClicked = function() {
        Draw Function
 **************************/
 draw = function() {
-    if (currentScene === 1)
+    if (currentScene === 1) //Scene 1 is the "Splash Screen"
         {  
         Splash();  
     }
-    else if (currentScene===2)
+    else if (currentScene===2) //Scene 2 allows for the game to start in the default mode, "Hockey"
         {
         playScreen();
+    }
+    else if (currentScene===3) //Scene 3 allows for the game to start in the second mode, "Soccer"
+        {
+        playScreen();
+    }
+    else if (currentScene===5) // Scene 5 shows the player the instructions on how to play the game.
+        {
+        instructions();
     }        
 };
 /*************************
