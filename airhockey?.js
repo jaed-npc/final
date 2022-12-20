@@ -10,7 +10,7 @@
 var currentScene = 1; //changes the scenes in the game
 var stillplaying = true; //If the game is still going on
 var Clock = 0; //Clock
-
+var m=createFont("monospace");
 var mouseY = height/2;
 var mouseX = height/2;
 var player2Y = height/2;
@@ -117,7 +117,7 @@ var multi = new Button({
     }
 });
 var multihockey = new Button({
-    x: 150,
+    x: 200,
     y: 200,
     width: 100,
     height: 35,
@@ -127,8 +127,8 @@ var multihockey = new Button({
     }
 });
 var multiSoccer = new Button({
-    x: 150,
-    y: 250,
+    x: 400,
+    y: 200,
     width: 100,
     height: 35,
     label: "  Soccer",
@@ -136,6 +136,9 @@ var multiSoccer = new Button({
         currentScene = 7;
     }
 });
+
+
+
 /***************************************
              Button End
 ***************************************/
@@ -418,7 +421,17 @@ var drawBall = function(x,y) {
     stroke(0, 0, 0); //black outline of the ball
     strokeWeight(1); //outline thickness = 1
     fill(255, 255, 255); //white soccer ball color
-    ellipse(x,y,20,20); // ball
+    ellipse(x,y,20,20);// ball\
+    fill(0, 0, 0);
+    ellipse(x+6,y+5,3,3);
+    ellipse(x-6,y+5,3,3);
+    ellipse(x-6,y-5,3,3);
+    ellipse(x+6,y-5,3,3);
+    ellipse(x,y-8,3,3);
+    ellipse(x,y,3,3);
+    ellipse(x,y+8,3,3);
+    ellipse(x-8,y,3,3);
+    ellipse(x+8,y,3,3);
 };
 /****************************
       Draw Puck End
@@ -532,6 +545,7 @@ var drawScore = function() {
     rect(174,0,246,24,29); //scoreboard
     fill(255, 0, 0); //scoreboard text color
     textSize(16); //size of the text
+    textFont(m);// text font
     
 var Player1Score = "Player 1:"+player1Score; //finding the player1score then adding it to the score so that the scoreboard reflects their points
     text(Player1Score, 185,5);
@@ -656,9 +670,17 @@ var drawhomeScreen = function() {
     fill(54, 54, 54);
     text ("Air Hockey", 192, 31);
     fill(0, 242, 255);
-    text ("Air Hockey", 194, 29);
+    text ("Air Hockey", 199, 24);
     fill(255, 255, 255);
+    textSize(10);
+    fill(0,242,255);
+    text(" + SOCCER!",377,66);
+    fill(54,54,54);
+    text("+   OCCER!",370,59);
     stroke(0, 0, 0);
+  
+  
+    
 };
 /***************************
        Home Draw End
@@ -671,13 +693,64 @@ var drawhomeScreen = function() {
 var Splash = function() {
 currentScene=1;
     drawhomeScreen();
+    noStroke();
+    fill(0, 26, 255);
+    ellipse(233,200,112,49);
+    fill(20, 9, 230);
+    arc(231, 188, 46, -105, -3, 176);
+    fill(0, 33, 125);
+    ellipse(233,204,98,31);
+   //bezier(181, 201, 214, 248, 368, 184, 207, 184);
+   fill(79, 73, 252);
+   ellipse(241,158,5,20);
+   ellipse(234,142,5,5);
+   stroke(37, 37, 69);
+   
+   fill(255,255,255);
+   noStroke();
+   ellipse(325,250,25,25);
+   fill(0, 0, 0);
+   ellipse(334,247,5,5);
+   ellipse(325,241,5,5);
+   ellipse(316,246,5,5);
+   ellipse(331,258,5,5);
+   ellipse(318,258,5,5);
+   rect(323,248,4,4,5);
+   
+   fill(255, 0, 38);
+    ellipse(427,314,46,17);
+    
+    arc(426, 312, 15, -47, 4, 180);
+    fill(140, 41, 41);
+    ellipse(427,315,28,5);
+    
+    fill(0, 0, 0);
+    stroke(0, 15, 227);
+    line(131, 130, 205, 151);
+    
+    line(91, 151, 194, 179);
+    
+      line(77, 173, 175, 197);
+    
+   stroke(37, 37, 69);
+   
+   
+    
+   
+  
+   
     //buttons
+    
+    
+    
+   stroke(91, 186, 116);
     multi.draw();
     Soccer.draw();
     howtoPlay.draw();
     start.draw();
     drawBitmojiRyan(308,357,50); //bitmojis
     drawBitmojiJaed(551,357,50);
+   
 };
 /***************************
       Splash Screen End 
@@ -695,19 +768,22 @@ if (currentScene === 2) {
     updatePlayer2();
     drawPlayers();
     puck.draw();
+   
 }
 //does the same thing but for the soccer button and draws the soccer field.
 else if (currentScene === 3) {
     drawsoccerField();
     updatePlayer2();
     drawPlayers();
+    reset.draw();
 }
 //now moves the computer player, draws both the User and computer so you can see yourself interacting and playing the game.
 else if (currentScene === 4) {
     drawRink();
     reset.draw();
-    puck.draw(); //puts the Puck/ball on screen to be hit into the net
+    puck.draw();//puts the Puck/ball on screen to be hit into the net
 drawPlayers();
+
 var movePlayerUp = function() {
     player2Y -= PLAYER_MOVE_SPEED;
 };
@@ -738,8 +814,9 @@ if (keyIsPressed) {
 else if (currentScene === 7) {
     drawsoccerField();
     reset.draw();
-    puck.draw(); //puts the Puck/ball on screen to be hit into the net
+    puck.draw();//puts the Puck/ball on screen to be hit into the net
 drawPlayers();
+
 var movePlayerUp = function() {
     player2Y -= PLAYER_MOVE_SPEED;
 };
@@ -836,6 +913,22 @@ currentScene=6;
     multiSoccer.draw();
     drawBitmojiRyan(308,357,50); //bitmojis
     drawBitmojiJaed(551,342,50);
+    
+    
+   
+    fill(25, 156, 250);
+    
+     textFont(m);
+      textSize(45);
+     text("CHOOSE MODE",220,101);
+     fill(255, 255, 255);
+     textSize(15);
+     text("1P:USE THE MOUSE TO MOVE",140,280);
+     text("2P:USE LEFT RIGHT UP DOWN TO MOVE",140,315);
+     
+     noStroke();
+     
+     back.draw();
 };
 /***********************************
     Multiplayer Button Scene End 
@@ -853,10 +946,12 @@ mouseClicked = function() {
         Soccer.handleMouseClick();
         start.handleMouseClick();
         howtoPlay.handleMouseClick();
+       
     }
-    if (currentScene === 2 || currentScene === 4 || currentScene === 7)
+    if (currentScene === 2 ||currentScene===3|| currentScene === 4 || currentScene === 7)
     {
         reset.handleMouseClick();
+       
     }
     //You can only click the back button when the scene is set to 5 as to not interfere with the splash screen
     else if (currentScene === 5)
@@ -867,6 +962,8 @@ mouseClicked = function() {
     {
         multihockey.handleMouseClick();
         multiSoccer.handleMouseClick();
+         back.handleMouseClick();
+         reset.handleMouseClick();
     }
 };
 /****************************
