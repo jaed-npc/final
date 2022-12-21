@@ -10,7 +10,7 @@
 var currentScene = 1; //changes the scenes in the game
 var stillplaying = true; //If the game is still going on
 var Clock = 0; //Clock
-
+var m=createFont("monospace");
 var mouseY = height/2;
 var mouseX = height/2;
 var player2Y = height/2;
@@ -44,7 +44,6 @@ var Button = function(config) {
     this.label = config.label || "Click";
     this.onClick = config.onClick || function() {};
 };
-
 Button.prototype.draw = function() {
     fill(89, 135, 121, 100);
     rect(this.x, this.y, this.width, this.height, 13);
@@ -53,14 +52,12 @@ Button.prototype.draw = function() {
     textAlign(LEFT, TOP);
     text(this.label, this.x+10, this.y+this.height/4);
 };
-
 Button.prototype.isMouseInside = function() {
     return mouseX > this.x &&
            mouseX < (this.x + this.width) &&
            mouseY > this.y &&
            mouseY < (this.y + this.height);
 };
-
 Button.prototype.handleMouseClick = function() {
     if (this.isMouseInside()) {
         this.onClick();
@@ -117,7 +114,7 @@ var multi = new Button({
     }
 });
 var multihockey = new Button({
-    x: 150,
+    x: 200,
     y: 200,
     width: 100,
     height: 35,
@@ -127,8 +124,8 @@ var multihockey = new Button({
     }
 });
 var multiSoccer = new Button({
-    x: 150,
-    y: 250,
+    x: 400,
+    y: 200,
     width: 100,
     height: 35,
     label: "  Soccer",
@@ -144,8 +141,7 @@ var multiSoccer = new Button({
 /******************************************************
                     Ryan Bitmoji
 *******************************************************/
-var drawBitmojiHeadRyan = function(x, y, bitMojiHeight)
-{
+var drawBitmojiHeadRyan = function(x, y, bitMojiHeight) {
     noStroke();
     fill(255, 220, 171);
     ellipse(x, y, bitMojiHeight/150*83, bitMojiHeight/150*100);
@@ -177,8 +173,7 @@ var drawBitmojiHeadRyan = function(x, y, bitMojiHeight)
     line(x-14*bitMojiHeight/150, y+30*bitMojiHeight/150, x+14*bitMojiHeight/150, y+30*bitMojiHeight/150);
 
 };
-var drawBitmojiBodyRyan = function(x, y, bitMojiHeight)
-{
+var drawBitmojiBodyRyan = function(x, y, bitMojiHeight) {
     fill(30, 78, 115);
     noStroke();
     quad(x, y+60*bitMojiHeight/150, x-40*bitMojiHeight/150, y+45*bitMojiHeight/150, x-30*bitMojiHeight/150, y+100*bitMojiHeight/150, x, y+100*bitMojiHeight/150);
@@ -195,8 +190,7 @@ var drawBitmojiBodyRyan = function(x, y, bitMojiHeight)
     arc(x+18*bitMojiHeight/150, y+77*bitMojiHeight/150, bitMojiHeight/150*30, bitMojiHeight/150*30, 60, 300);
     strokeWeight(1);
 };
-var drawBitmojiRyan = function(x, y, bitMojiHeight)
-{
+var drawBitmojiRyan = function(x, y, bitMojiHeight) {
     drawBitmojiHeadRyan(x, y, bitMojiHeight);
     drawBitmojiBodyRyan(x, y, bitMojiHeight);
 
@@ -335,7 +329,6 @@ var drawRink = function() {
             fill(0, 128, 255);
             rect(155+280*g, 0, 5, 400);
     }
-
 //Center Ice
     noStroke();
     fill(255, 0, 0);
@@ -418,7 +411,17 @@ var drawBall = function(x,y) {
     stroke(0, 0, 0); //black outline of the ball
     strokeWeight(1); //outline thickness = 1
     fill(255, 255, 255); //white soccer ball color
-    ellipse(x,y,20,20); // ball
+    ellipse(x,y,20,20);// ball\
+    fill(0, 0, 0);
+    ellipse(x+6,y+5,3,3);
+    ellipse(x-6,y+5,3,3);
+    ellipse(x-6,y-5,3,3);
+    ellipse(x+6,y-5,3,3);
+    ellipse(x,y-8,3,3);
+    ellipse(x,y,3,3);
+    ellipse(x,y+8,3,3);
+    ellipse(x-8,y,3,3);
+    ellipse(x+8,y,3,3);
 };
 /****************************
       Draw Puck End
@@ -431,10 +434,10 @@ var drawBall = function(x,y) {
 var Puck = function(position, speed) {
         this.position = position;
         this.speed = speed || puckSpeed;
-        this.radius = 12;
+        this.radius = 12; // the radius in which the ball or puck can be hit by the bitmojis and or paddles.
 
     this.resetVelocity = function() {
-        this.theta = random(0, 360);
+        this.theta = random(0, 360); //creates the value theta and randomizes the value from 0 to 360 simulating degrees.
         this.velocity = new PVector(
         this.speed*cos(this.theta),-this.speed*sin(this.theta));
         player2Y = height/2;
@@ -443,13 +446,14 @@ var Puck = function(position, speed) {
     this.resetVelocity();
 
     this.draw = function() {
-if (currentScene === 2 || currentScene === 4) {    
+if (currentScene === 2 || currentScene === 4) { //draws the puck for the air hockey modes multiplayer (4) and single (2)   
     drawPuck(this.position.x,this.position.y);
     }
-else if (currentScene === 3 || currentScene === 7) {
+else if (currentScene === 3 || currentScene === 7) { //draws the soccer ball for the soccer modes multiplayer (7) and single (3)
     drawBall(this.position.x,this.position.y);
     }
 };
+//Checks if the x and y positions + the size of the paddles/2 - the radius are in the radius of the paddle and then uses a random math function to generate a vector and creates a path for the ball/puck to bounce off of the paddle.
     this.collideWithPaddle = function(x, y) {
         if (this.position.x - this.radius < x + paddleWidth/2 &&
         this.position.x + this.radius > x - paddleWidth/2) {
@@ -468,7 +472,7 @@ else if (currentScene === 3 || currentScene === 7) {
         }
     };
     this.update = function() {
-        //Handle wall collisions
+        //Handle wall collisions, checks for the positoon of the ball/puck if it is in the radius of the net then moves it back to the center adding a point to either player. 
         if (this.position.x < 10 && this.position.y>150 && this.position.y<280) {
             player2Score++;
             this.position = new PVector(width/2, height/2);
@@ -479,6 +483,7 @@ else if (currentScene === 3 || currentScene === 7) {
             this.position = new PVector(width/2, height/2);
             gameStarted = false;
         }
+//depending on the positions it uses the values based on the vector to either send the ball back or fourth and multiplies it by the number.
        else if (this.position.y < 0) {
             this.position.y = 0;
             this.velocity.mult(new PVector(1, -1));
@@ -502,6 +507,7 @@ else if (currentScene === 3 || currentScene === 7) {
     };
 };
 
+//generates a new puck in the center 
 puck = new Puck(new PVector(width/2,height/2));
 
 
@@ -532,6 +538,7 @@ var drawScore = function() {
     rect(174,0,246,24,29); //scoreboard
     fill(255, 0, 0); //scoreboard text color
     textSize(16); //size of the text
+    textFont(m);// text font
     
 var Player1Score = "Player 1:"+player1Score; //finding the player1score then adding it to the score so that the scoreboard reflects their points
     text(Player1Score, 185,5);
@@ -546,6 +553,7 @@ var Player2Score = "Player 2:"+player2Score;
 /***************************
        Player Update   
 ****************************/
+//lets the computer follow the puck position around so that it can play against the user. It checks if the player2X and Y postions are less or more than the movement speeds then allows for the computer to follow the puck or ball around to play the user.
 var updatePlayer2 = function() {
     if (abs(player2Y-puck.position.y) < playerMoveSpeed){
         player2Y = puck.position.y;
@@ -575,7 +583,7 @@ var updatePlayer2 = function() {
        Player Movement  
 ****************************/
 var drawPlayers = function() {
-//prevents the player from moving past the red line and the computer from moving past the blue line.
+//prevents the player from moving past the red line and the computer from moving past the blue line or half way for soccer.
 //by doing this it prevents them from having an advantage.
 //When the current scene is set to 2 it is drawing the paddles
 //Player1 can use the mouse while Player2, the computer has to follow a randomized path from the line (vector) of the ball or puck for its movement.
@@ -654,10 +662,15 @@ var drawhomeScreen = function() {
     //TITLE
     textSize(40); 
     fill(54, 54, 54);
-    text ("Air Hockey", 192, 31);
+    text ("Air Hockey", 196, 30); //title
     fill(0, 242, 255);
-    text ("Air Hockey", 194, 29);
+    text ("Air Hockey", 199, 28);
     fill(255, 255, 255);
+    textSize(8);
+    fill(54,54,54);
+    text(" + SOCCER!",376,68);
+    fill(0,242,255);
+    text(" + SOCCER!",381,66);
     stroke(0, 0, 0);
 };
 /***************************
@@ -669,14 +682,48 @@ var drawhomeScreen = function() {
        Splash Screen 
 ****************************/
 var Splash = function() {
-currentScene=1;
-    drawhomeScreen();
-    //buttons
+currentScene=1; // tells the program that the scene is now set to 1 to create the splash screen.
+    drawhomeScreen(); // made into a separate function so it can be called more than once.
+    noStroke();
+    fill(0, 26, 255);
+    ellipse(233,200,112,49);
+    fill(20, 9, 230);
+    arc(231, 188, 46, -105, -3, 176);
+    fill(0, 33, 125);
+    ellipse(233,204,98,31);
+    fill(79, 73, 252);
+    ellipse(241,158,5,20);
+    ellipse(234,142,5,5);
+    stroke(37, 37, 69);
+    fill(255,255,255);
+    noStroke();
+    ellipse(325,250,25,25);
+    fill(0, 0, 0);
+    ellipse(334,247,5,5);
+    ellipse(325,241,5,5);
+    ellipse(316,246,5,5);
+    ellipse(331,258,5,5);
+    ellipse(318,258,5,5);
+    rect(323,248,4,4,5);
+    fill(255, 0, 38);
+    ellipse(427,314,46,17);
+    arc(426, 312, 15, -47, 4, 180);
+    fill(140, 41, 41);
+    ellipse(427,315,28,5);
+    fill(0, 0, 0);
+    stroke(0, 15, 227);
+    line(131, 130, 205, 151);
+    line(91, 151, 194, 179);
+    line(77, 173, 175, 197);
+    stroke(37, 37, 69);    
+//buttons
+    stroke(91, 186, 116);
     multi.draw();
     Soccer.draw();
     howtoPlay.draw();
     start.draw();
-    drawBitmojiRyan(308,357,50); //bitmojis
+//bitmojis
+    drawBitmojiRyan(308,357,50); 
     drawBitmojiJaed(551,357,50);
 };
 /***************************
@@ -701,36 +748,37 @@ else if (currentScene === 3) {
     drawsoccerField();
     updatePlayer2();
     drawPlayers();
+    reset.draw();
 }
 //now moves the computer player, draws both the User and computer so you can see yourself interacting and playing the game.
 else if (currentScene === 4) {
     drawRink();
     reset.draw();
-    puck.draw(); //puts the Puck/ball on screen to be hit into the net
+    puck.draw();//puts the Puck/ball on screen to be hit into the net
 drawPlayers();
-var movePlayerUp = function() {
-    player2Y -= PLAYER_MOVE_SPEED;
+var movePlayerUp = function() { //can be called later when the proper key is pressed.
+    player2Y -= PLAYER_MOVE_SPEED; // allows the player to move up when it is called later by taking the y positon of the second player and the set movement speed.
 };
-var movePlayerDown = function() {
+var movePlayerDown = function() {  // allows the player to move down when it is called later by taking the y positon of the second player and the set movement speed.
     player2Y += PLAYER_MOVE_SPEED;
 };
-var movePlayerRight=function(){
+var movePlayerRight=function(){ // allows the player to move to the right when it is called later by taking the y positon of the second player and the set movement speed.
     player2X+=PLAYER_MOVE_SPEED;
 };
-var movePlayerLeft=function(){
+var movePlayerLeft=function(){ // allows the player to move to the left when it is called later by taking the y positon of the second player and the set movement speed.
     player2X-=PLAYER_MOVE_SPEED;
 };
 if (keyIsPressed) {
-        if (keyCode === UP){
+        if (keyCode === UP){ // goes back to the "move player up" function and when you hit the up arrow.
             movePlayerUp();
         }
-        else if (keyCode === DOWN){
+        else if (keyCode === DOWN){ // goes back to the "move player down" function and when you hit the down arrow.
             movePlayerDown();
         }
-        else if (keyCode===RIGHT){
+        else if (keyCode===RIGHT){ // goes back to the "move player right" function and when you hit the right arrow.
             movePlayerRight();
         }
-        else if(keyCode===LEFT){
+        else if(keyCode===LEFT){ // goes back to the "move player left" function and when you hit the left arrow.
             movePlayerLeft();
         }
     }
@@ -738,40 +786,38 @@ if (keyIsPressed) {
 else if (currentScene === 7) {
     drawsoccerField();
     reset.draw();
-    puck.draw(); //puts the Puck/ball on screen to be hit into the net
+    puck.draw();//puts the Puck/ball on screen to be hit into the net
 drawPlayers();
-var movePlayerUp = function() {
-    player2Y -= PLAYER_MOVE_SPEED;
+var movePlayerUp = function() { //can be called later when the proper key is pressed.
+    player2Y -= PLAYER_MOVE_SPEED; // allows the player to move up when it is called later by taking the y positon of the second player and the set movement speed.
 };
-var movePlayerDown = function() {
+var movePlayerDown = function() {  // allows the player to move down when it is called later by taking the y positon of the second player and the set movement speed.
     player2Y += PLAYER_MOVE_SPEED;
 };
-var movePlayerRight=function(){
+var movePlayerRight=function(){ // allows the player to move to the right when it is called later by taking the y positon of the second player and the set movement speed.
     player2X+=PLAYER_MOVE_SPEED;
 };
-var movePlayerLeft=function(){
+var movePlayerLeft=function(){ // allows the player to move to the left when it is called later by taking the y positon of the second player and the set movement speed.
     player2X-=PLAYER_MOVE_SPEED;
 };
 if (keyIsPressed) {
-        if (keyCode === UP){
+        if (keyCode === UP){ // goes back to the "move player up" function and when you hit the up arrow.
             movePlayerUp();
         }
-        else if (keyCode === DOWN){
+        else if (keyCode === DOWN){ // goes back to the "move player down" function and when you hit the down arrow.
             movePlayerDown();
         }
-        else if (keyCode===RIGHT){
+        else if (keyCode===RIGHT){ // goes back to the "move player right" function and when you hit the right arrow.
             movePlayerRight();
         }
-        else if(keyCode===LEFT){
+        else if(keyCode===LEFT){ // goes back to the "move player left" function and when you hit the left arrow.
             movePlayerLeft();
         }
     }
 }
-
     drawScore(); //puts the scoreboard on the screen
-    puck.draw();
-
-//if the game is not started the clock starts, and when the time is 
+    puck.draw(); //draws the puck 
+//if the game is not started the clock starts.
     if (!gameStarted) {
         t++;
         if (t >= pauseTime) {
@@ -781,7 +827,6 @@ if (keyIsPressed) {
         return;
     }
 puck.update();
-
 };
 /***************************
        Play Screen End 
@@ -836,6 +881,16 @@ currentScene=6;
     multiSoccer.draw();
     drawBitmojiRyan(308,357,50); //bitmojis
     drawBitmojiJaed(551,342,50);
+        fill(25, 156, 250);
+        textFont(m);
+    textSize(45);
+    text("CHOOSE MODE",220,101);
+    fill(255, 255, 255);
+    textSize(15);
+    text("Player 1:  USE THE MOUSE TO MOVE",140,280);
+    text("Player 2:  USE LEFT RIGHT UP DOWN TO MOVE",140,315);
+    noStroke();
+    back.draw();
 };
 /***********************************
     Multiplayer Button Scene End 
@@ -846,7 +901,7 @@ currentScene=6;
     MouseClicked Function 
 *****************************/
 mouseClicked = function() {
-    //You can only click the buttons when the scene is set to 1 as to not interfere with the game
+//You can only click the buttons when the scene is set to 1 as to not interfere with the game
     if (currentScene === 1)
     {
         multi.handleMouseClick();
@@ -854,19 +909,24 @@ mouseClicked = function() {
         start.handleMouseClick();
         howtoPlay.handleMouseClick();
     }
-    if (currentScene === 2 || currentScene === 4 || currentScene === 7)
+//Allows the reset button to be clicked during all four gamemodes 
+    if (currentScene === 2 ||currentScene===3|| currentScene === 4 || currentScene === 7)
     {
         reset.handleMouseClick();
+       
     }
-    //You can only click the back button when the scene is set to 5 as to not interfere with the splash screen
+//You can only click the back button when the scene is set to 5 as to not interfere with the splash screen
     else if (currentScene === 5)
     {
         back.handleMouseClick();
     }
     else if (currentScene === 6)
     {
+//You can only click the multiplayer buttons when the scene is set to 6 as to not interfere with the splash screen, you can click the multiplayer gamemodes and allow them to be drawn separately.
         multihockey.handleMouseClick();
         multiSoccer.handleMouseClick();
+        back.handleMouseClick();
+        reset.handleMouseClick();
     }
 };
 /****************************
@@ -882,7 +942,7 @@ draw = function() {
         {  
             Splash();  
         }
-    else if (currentScene === 2 || currentScene === 3 || currentScene === 4 || currentScene === 7) //Scene 2 allows for the game to start in the default mode, "Hockey"
+    else if (currentScene === 2 || currentScene === 3 || currentScene === 4 || currentScene === 7) //if any of these scenes are set it allows for the game to start for all game types to run properly
         {
             playScreen();
         }
@@ -890,7 +950,7 @@ draw = function() {
         {
             instructions();
         }
-    else if (currentScene === 6){
+    else if (currentScene === 6){ //When set to scene 6 it calls the multiplayer scene
         twoversion();
     }
 };
